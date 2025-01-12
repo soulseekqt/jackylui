@@ -4073,7 +4073,7 @@ blockquote {
   }
 
   .heading.h1 {
-    font-size: 35px;
+    font-size: 20px;
   }
 
   .heading.h2 {
@@ -4213,6 +4213,10 @@ blockquote {
 
   ._3-grid {
     grid-template-columns: 1fr;
+  }
+
+  .heading.h1 {
+    font-size: 18px;
   }
 
   .error2 {
