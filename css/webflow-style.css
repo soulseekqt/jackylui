@@ -2068,76 +2068,6 @@ textarea.w-input, textarea.w-select {
   --dark-blue: #00076f;
 }
 
-.w-layout-grid {
-  grid-row-gap: 16px;
-  grid-column-gap: 16px;
-  grid-template-rows: auto auto;
-  grid-template-columns: 1fr 1fr;
-  grid-auto-columns: 1fr;
-  display: grid;
-}
-
-.w-form-formradioinput--inputType-custom {
-  border: 1px solid #ccc;
-  border-radius: 50%;
-  width: 12px;
-  height: 12px;
-}
-
-.w-form-formradioinput--inputType-custom.w--redirected-focus {
-  box-shadow: 0 0 3px 1px #3898ec;
-}
-
-.w-form-formradioinput--inputType-custom.w--redirected-checked {
-  border-width: 4px;
-  border-color: #3898ec;
-}
-
-.w-checkbox {
-  margin-bottom: 5px;
-  padding-left: 20px;
-  display: block;
-}
-
-.w-checkbox:before {
-  content: " ";
-  grid-area: 1 / 1 / 2 / 2;
-  display: table;
-}
-
-.w-checkbox:after {
-  content: " ";
-  clear: both;
-  grid-area: 1 / 1 / 2 / 2;
-  display: table;
-}
-
-.w-checkbox-input {
-  float: left;
-  margin: 4px 0 0 -20px;
-  line-height: normal;
-}
-
-.w-checkbox-input--inputType-custom {
-  border: 1px solid #ccc;
-  border-radius: 2px;
-  width: 12px;
-  height: 12px;
-}
-
-.w-checkbox-input--inputType-custom.w--redirected-checked {
-  background-color: #3898ec;
-  background-image: url("../images/custom-checkbox-checkmark.589d534424.svg");
-  background-position: 50%;
-  background-repeat: no-repeat;
-  background-size: cover;
-  border-color: #3898ec;
-}
-
-.w-checkbox-input--inputType-custom.w--redirected-focus {
-  box-shadow: 0 0 3px 1px #3898ec;
-}
-
 body {
   background-color: var(--back-grey);
   color: var(--black);
@@ -2394,7 +2324,7 @@ blockquote {
 }
 
 .spacer._24 {
-  text-transform: uppercase;
+  text-transform: none;
   background-color: #0000;
   width: 24px;
   height: 24px;
@@ -2492,10 +2422,11 @@ blockquote {
   width: 100%;
   max-width: 1230px;
   min-height: 50px;
+  margin-bottom: 25px;
   margin-left: auto;
   margin-right: auto;
-  padding-left: 50px;
-  padding-right: 50px;
+  padding-left: 47px;
+  padding-right: 0;
   display: block;
   position: relative;
 }
@@ -2589,6 +2520,8 @@ blockquote {
 
 .column.desktop-6-column {
   width: 50%;
+  margin-left: 347px;
+  padding-left: 0;
 }
 
 .column.desktop-5-column {
@@ -2735,7 +2668,7 @@ blockquote {
 
 .footer {
   z-index: 0;
-  padding-top: 40px;
+  padding-top: 165px;
   padding-bottom: 40px;
   position: relative;
 }
@@ -2775,8 +2708,12 @@ blockquote {
   line-height: 1.4em;
 }
 
+.paragraph.small.body {
+  font-family: "Jha Times Now 400 100", Times New Roman, sans-serif;
+}
+
 .paragraph.large {
-  font-family: Theinhardt Regular, Palatino Linotype, sans-serif;
+  font-family: Abcfavoritexpanded, Arial, sans-serif;
   font-size: 19px;
   line-height: 1.5em;
 }
@@ -3267,6 +3204,8 @@ blockquote {
 }
 
 .heading {
+  font-family: Abcfavoritexpanded, Arial, sans-serif;
+  font-size: 28px;
   font-weight: 400;
 }
 
@@ -3274,7 +3213,7 @@ blockquote {
   text-align: justify;
   background-color: #0000;
   margin-bottom: 24px;
-  font-family: Theinhardt Regular, Palatino Linotype, sans-serif;
+  font-family: "Jha Times Now 400 100", Times New Roman, sans-serif;
   font-size: 20px;
   font-weight: 400;
   line-height: 1.25em;
@@ -3632,8 +3571,8 @@ blockquote {
 }
 
 .link {
-  background-color: #0f0;
-  font-family: Theinhardt Regular, Palatino Linotype, sans-serif;
+  background-color: #fff0;
+  font-family: "Jha Times Now 400 100", Times New Roman, sans-serif;
   font-size: 19px;
   line-height: 1.5em;
 }
@@ -3671,7 +3610,112 @@ blockquote {
   background-color: #0f0;
 }
 
+.text-span-12 {
+  padding-left: 60px;
+}
+
+.heading-2 {
+  font-family: Abcfavoritexpanded, Arial, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.text-span-13 {
+  margin-bottom: 196px;
+  margin-left: -23px;
+  padding-left: 0;
+  font-family: Abcfavoritexpanded, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.body {
+  margin-left: -31px;
+  padding-top: 25px;
+  font-family: "Jha Times Now 400 100", Times New Roman, sans-serif;
+  font-size: 16px;
+}
+
+.columns {
+  border-top: .5px solid #000;
+}
+
+.button-2 {
+  color: var(--black);
+  text-align: center;
+  background-color: #fff0;
+  border: .5px solid #000;
+  border-radius: 40px;
+  margin-left: 41px;
+  margin-right: 34px;
+  padding: 5px 10px;
+  font-family: Abcfavorit, Arial, sans-serif;
+}
+
+.text-block {
+  margin-left: 192px;
+  padding-bottom: 1px;
+  padding-left: 186px;
+  padding-right: 0;
+  font-family: Abcfavoritexpanded, Arial, sans-serif;
+  font-size: 80px;
+  font-weight: 700;
+}
+
+.text-block-2 {
+  text-transform: lowercase;
+  font-family: "Jha Times Now 400 100", Times New Roman, sans-serif;
+  font-weight: 300;
+}
+
+.button-3 {
+  font-family: Abcfavorit, Arial, sans-serif;
+}
+
+.text-block-3 {
+  border: .5px solid #000;
+  border-radius: 40px;
+  margin-right: 19px;
+  padding-left: 9px;
+  padding-right: 1183px;
+}
+
+.button-4 {
+  color: var(--dark-grey);
+  background-color: #fff0;
+  border: 1px solid #000000d6;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  margin-left: 4px;
+  padding: 0 5px;
+  font-family: Abcfavorit, Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+}
+
+.text-block-4 {
+  color: var(--light-grey);
+  font-family: "Jha Times Now 400 100", Times New Roman, sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+}
+
+.column-2 {
+  padding-left: 198px;
+}
+
+.text-block-5 {
+  text-align: right;
+  padding-left: 0;
+  padding-right: 62px;
+  font-family: "Jha Times Now 400 100", Times New Roman, sans-serif;
+}
+
 @media screen and (min-width: 1280px) {
+  .container {
+    padding-left: 82px;
+  }
+
   .banner-container {
     max-width: 1140px;
   }
@@ -4258,30 +4302,163 @@ blockquote {
     flex: 0 auto;
     width: 100%;
   }
-}
 
-#w-node-_7deb7d29-28be-dc15-1919-f1d520e785de-20d56244, #w-node-_12c81006-a7c5-dabd-7c3a-f8fd71170197-20d56244 {
-  grid-area: span 1 / span 1 / span 1 / span 1;
+  .body {
+    margin-left: -12px;
+  }
 }
 
 @font-face {
+  font-family: 'Antique Legacy';
+  src: url('https://cdn.prod.website-files.com/65a5cbd0064407ea20d561fb/67be13be27f88bfcc070971f_Antique-Legacy-Medium.D33QkyyE.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Jha Times Now 400 100';
+  src: url('https://cdn.prod.website-files.com/65a5cbd0064407ea20d561fb/67be13ab8129a4ffcfb011a8_JHA%20Times%20Now%20SemiLight-normal-400-100.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
   font-family: 'Theinhardt';
-  src: url('../images/theinhardt-bold.otf') format('opentype');
+  src: url('https://cdn.prod.website-files.com/65a5cbd0064407ea20d561fb/67828c17a67afe34e74c3150_Theinhardt-Bold.otf') format('opentype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'Theinhardt';
-  src: url('../images/theinhardt-light.otf') format('opentype');
+  src: url('https://cdn.prod.website-files.com/65a5cbd0064407ea20d561fb/67828c22b39325149ca1583d_Theinhardt-Light.otf') format('opentype');
   font-weight: 300;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'Theinhardt Regular';
-  src: url('../images/theinhardt-regular-20-1-.otf') format('opentype');
+  src: url('https://cdn.prod.website-files.com/65a5cbd0064407ea20d561fb/67828bd86a800be58eb5162f_Theinhardt-Regular%20(1).otf') format('opentype');
   font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ppneuemontreal';
+  src: url('https://cdn.prod.website-files.com/65a5cbd0064407ea20d561fb/67be127b2aea82200ac7ca97_ppneuemontreal-bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ppneuemontreal';
+  src: url('https://cdn.prod.website-files.com/65a5cbd0064407ea20d561fb/67be127b8b000c7cc08f2f6f_ppneuemontreal-semibolditalic.otf') format('opentype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ppneuemontreal';
+  src: url('https://cdn.prod.website-files.com/65a5cbd0064407ea20d561fb/67be127b5d7df8486dc6fa66_ppneuemontreal-italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ppneuemontreal Book';
+  src: url('https://cdn.prod.website-files.com/65a5cbd0064407ea20d561fb/67be127bc609cd5091059ad0_ppneuemontreal-book.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ppneuemontreal';
+  src: url('https://cdn.prod.website-files.com/65a5cbd0064407ea20d561fb/67be127ce22e90764824998a_ppneuemontreal-medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Ppneuemontreal';
+  src: url('https://cdn.prod.website-files.com/65a5cbd0064407ea20d561fb/67be127c453e66eb865ebb6e_ppneuemontreal-thin.otf') format('opentype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Itc Garamond Book Condensed';
+  src: url('https://cdn.prod.website-files.com/65a5cbd0064407ea20d561fb/67be1299379cd2f41236b285_ITC%20Garamond%20Book%20Condensed%20Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Abcfavoritextended';
+  src: url('https://cdn.prod.website-files.com/65a5cbd0064407ea20d561fb/67be136d63becc5d006e0a46_ABCFavoritExtended-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Abcfavorit';
+  src: url('https://cdn.prod.website-files.com/65a5cbd0064407ea20d561fb/67be136d7dc4f90cd62e4b0e_ABCFavorit-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Abcfavorit';
+  src: url('https://cdn.prod.website-files.com/65a5cbd0064407ea20d561fb/67be136c2311f70c6acd3d29_ABCFavorit-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Abcfavorit';
+  src: url('https://cdn.prod.website-files.com/65a5cbd0064407ea20d561fb/67be136df3c2d997380b8a23_ABCFavorit-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Abcfavorit';
+  src: url('https://cdn.prod.website-files.com/65a5cbd0064407ea20d561fb/67be136d96766e86c3eb6677_ABCFavorit-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Abcfavoritexpanded';
+  src: url('https://cdn.prod.website-files.com/65a5cbd0064407ea20d561fb/67be136c3927ac7bacf896a2_ABCFavoritExpanded-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Abcfavoritextended';
+  src: url('https://cdn.prod.website-files.com/65a5cbd0064407ea20d561fb/67be136d43b3134507a1d843_ABCFavoritExtended-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Abcfavorit Book';
+  src: url('https://cdn.prod.website-files.com/65a5cbd0064407ea20d561fb/67be136d9de7578aebadda06_ABCFavorit-Book.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Abcfavoritextended Book';
+  src: url('https://cdn.prod.website-files.com/65a5cbd0064407ea20d561fb/67be136de9a39b4fb1bba20b_ABCFavoritExtended-Book.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Abcfavoritexpanded';
+  src: url('https://cdn.prod.website-files.com/65a5cbd0064407ea20d561fb/67be136d55c47ca44b3a19ee_ABCFavoritExpanded-Bold.otf') format('opentype');
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
