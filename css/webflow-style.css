@@ -2422,11 +2422,8 @@ blockquote {
   width: 100%;
   max-width: 1230px;
   min-height: 50px;
-  margin-bottom: 25px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 47px;
-  padding-right: 0;
+  margin: 18px auto 0;
+  padding: 0 0 50px 36px;
   display: block;
   position: relative;
 }
@@ -2668,7 +2665,7 @@ blockquote {
 
 .footer {
   z-index: 0;
-  padding-top: 165px;
+  padding-top: 8px;
   padding-bottom: 40px;
   position: relative;
 }
@@ -3204,6 +3201,8 @@ blockquote {
 }
 
 .heading {
+  margin-top: -37px;
+  padding-top: 0;
   font-family: Abcfavoritexpanded, Arial, sans-serif;
   font-size: 28px;
   font-weight: 400;
@@ -3615,14 +3614,18 @@ blockquote {
 }
 
 .heading-2 {
+  margin-bottom: 122px;
+  margin-left: -32px;
+  padding-left: 0;
   font-family: Abcfavoritexpanded, Arial, sans-serif;
   font-size: 28px;
   font-weight: 700;
 }
 
 .text-span-13 {
-  margin-bottom: 196px;
-  margin-left: -23px;
+  margin-bottom: 0;
+  margin-left: -35px;
+  padding-bottom: 147px;
   padding-left: 0;
   font-family: Abcfavoritexpanded, Arial, sans-serif;
   font-size: 16px;
@@ -3630,14 +3633,35 @@ blockquote {
 }
 
 .body {
+  border-top: 0 solid #000;
+  margin-top: 5px;
+  margin-bottom: 0;
   margin-left: -31px;
-  padding-top: 25px;
+  padding-top: 0;
   font-family: "Jha Times Now 400 100", Times New Roman, sans-serif;
   font-size: 16px;
+  position: relative;
+}
+
+.body.line_horizontal {
+  border: 1px #000;
+}
+
+.body.cap_horizontal {
+  justify-content: flex-start;
+  margin-left: -62px;
+  margin-right: 0;
+  padding-bottom: 0;
+  padding-left: 0;
+  padding-right: 82px;
+  display: block;
 }
 
 .columns {
-  border-top: .5px solid #000;
+  color: var(--black);
+  border-top: 0 #000;
+  border-bottom: .5px solid #000;
+  display: none;
 }
 
 .button-2 {
@@ -3684,13 +3708,16 @@ blockquote {
   color: var(--dark-grey);
   background-color: #fff0;
   border: 1px solid #000000d6;
+  border-bottom-color: #8a8a8ad6;
   border-radius: 20px;
   margin-bottom: 10px;
-  margin-left: 4px;
+  margin-left: 8px;
+  margin-right: auto;
   padding: 0 5px;
   font-family: Abcfavorit, Arial, sans-serif;
   font-size: 12px;
   font-weight: 300;
+  display: inline-block;
 }
 
 .text-block-4 {
@@ -3711,13 +3738,63 @@ blockquote {
   font-family: "Jha Times Now 400 100", Times New Roman, sans-serif;
 }
 
+.text-span-14 {
+  vertical-align: top;
+  padding-top: 19px;
+  display: block;
+}
+
+.link-2 {
+  vertical-align: top;
+}
+
+.class_line {
+  color: var(--black);
+  border-top: .5px #000;
+  border-right: 1px solid #000;
+}
+
+.column-3 {
+  border: .5px #000;
+  border-right-style: solid;
+}
+
+.section-2 {
+  border-top: .5px solid #000;
+}
+
 @media screen and (min-width: 1280px) {
   .container {
+    margin-top: 15px;
+    margin-bottom: 100px;
+    padding-bottom: 43px;
     padding-left: 82px;
+    display: block;
   }
 
   .banner-container {
     max-width: 1140px;
+  }
+
+  .body {
+    padding-left: 0;
+    display: block;
+  }
+
+  .button-4 {
+    margin-left: 47px;
+  }
+
+  .text-span-14 {
+    padding-top: 42px;
+  }
+
+  .column-3 {
+    border-right-width: .5px;
+  }
+
+  .section-2 {
+    padding-right: 87px;
   }
 }
 
@@ -4303,8 +4380,21 @@ blockquote {
     width: 100%;
   }
 
+  .heading-2 {
+    margin-left: -24px;
+  }
+
+  .text-span-13 {
+    margin-top: 18px;
+    margin-left: -16px;
+  }
+
   .body {
-    margin-left: -12px;
+    margin-left: -16px;
+  }
+
+  .body.cap_horizontal {
+    margin-left: -8px;
   }
 }
 
