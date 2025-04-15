@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deutsche Verben Wiederholungssystem</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.22.5/babel.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-4">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const SpacedRepetitionSystem = () => {
+      // Initial verb data with meanings and prepositions
+      const initialVerbData = [
+        { verb: "abhängig sein", meaning: "to be dependent", preposition: "von + Dativ", level: 0, nextReview: Date.now() },
+        { verb: "abhängen", meaning: "to depend", preposition: "von + Dativ", level: 0, nextReview: Date.now(), notes: "es hängt ab" },
+        { verb: "achten", meaning: "to pay attention", preposition: "auf + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "anfangen", meaning: "to begin", preposition: "mit + Dativ", level: 0, nextReview: Date.now() },
+        { verb: "sich ärgern", meaning: "to be annoyed", preposition: "über + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "aufhören", meaning: "to stop", preposition: "mit + Dativ", level: 0, nextReview: Date.now() },
+        { verb: "aufpassen", meaning: "to pay attention", preposition: "auf + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "sich aufregen", meaning: "to get upset", preposition: "über + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "sich bedanken", meaning: "to thank", preposition: "bei + Dativ", level: 0, nextReview: Date.now() },
+        { verb: "beginnen", meaning: "to begin", preposition: "mit + Dativ", level: 0, nextReview: Date.now() },
+        { verb: "sich beklagen", meaning: "to complain", preposition: "über + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "berichten", meaning: "to report", preposition: "über + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "sich beschweren", meaning: "to complain", preposition: "über + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "bitten", meaning: "to ask", preposition: "um + Akkusativ", level: 0, nextReview: Date.now(), notes: "jdn. bitten" },
+        { verb: "danken", meaning: "to thank", preposition: "für + Akkusativ", level: 0, nextReview: Date.now(), notes: "jdm. danken" },
+        { verb: "denken", meaning: "to think", preposition: "an + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "diskutieren", meaning: "to discuss", preposition: "über + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "einladen", meaning: "to invite", preposition: "zu + Dativ", level: 0, nextReview: Date.now() },
+        { verb: "entscheiden", meaning: "to decide", preposition: "über + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "sich entschuldigen", meaning: "to apologize", preposition: "für + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "sich erholen", meaning: "to recover", preposition: "von + Dativ", level: 0, nextReview: Date.now() },
+        { verb: "sich erinnern", meaning: "to remember", preposition: "an + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "sich erkundigen", meaning: "to inquire", preposition: "nach + Dativ", level: 0, nextReview: Date.now() },
+        { verb: "erzählen", meaning: "to tell", preposition: "von + Dativ", level: 0, nextReview: Date.now() },
+        { verb: "fragen", meaning: "to ask", preposition: "nach + Dativ", level: 0, nextReview: Date.now() },
+        { verb: "sich freuen", meaning: "to be happy", preposition: "über + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "sich gewöhnen", meaning: "to get used to", preposition: "an + Akkusativ", level: 0, nextReview: Date.now() },
+        // Additional verbs
+        { verb: "gratulieren", meaning: "to congratulate", preposition: "zu + Dativ", level: 0, nextReview: Date.now() },
+        { verb: "hoffen", meaning: "to hope", preposition: "auf + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "sich interessieren", meaning: "to be interested", preposition: "für + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "sich konzentrieren", meaning: "to concentrate", preposition: "auf + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "sich kümmern", meaning: "to take care", preposition: "um + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "lachen", meaning: "to laugh", preposition: "über + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "leiden", meaning: "to suffer", preposition: "an + Dativ", level: 0, nextReview: Date.now() },
+        { verb: "nachdenken", meaning: "to think about", preposition: "über + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "protestieren", meaning: "to protest", preposition: "gegen + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "schmecken", meaning: "to taste", preposition: "nach + Dativ", level: 0, nextReview: Date.now() },
+        { verb: "schreiben", meaning: "to write", preposition: "an + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "sorgen", meaning: "to care/worry", preposition: "für + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "sprechen", meaning: "to speak", preposition: "mit + Dativ", level: 0, nextReview: Date.now() },
+        { verb: "streiken", meaning: "to strike", preposition: "für + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "streiten", meaning: "to argue", preposition: "über + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "sich streiten", meaning: "to argue", preposition: "mit + Dativ", level: 0, nextReview: Date.now() },
+        { verb: "teilnehmen", meaning: "to participate", preposition: "an + Dativ", level: 0, nextReview: Date.now() },
+        { verb: "träumen", meaning: "to dream", preposition: "von + Dativ", level: 0, nextReview: Date.now() },
+        { verb: "überreden", meaning: "to persuade", preposition: "zu + Dativ", level: 0, nextReview: Date.now(), notes: "jdn. überreden" },
+        { verb: "überzeugen", meaning: "to convince", preposition: "von + Dativ", level: 0, nextReview: Date.now(), notes: "jdn. überzeugen" },
+        { verb: "sich unterhalten", meaning: "to converse", preposition: "mit + Dativ", level: 0, nextReview: Date.now() },
+        { verb: "sich verabreden", meaning: "to make an appointment", preposition: "mit + Dativ", level: 0, nextReview: Date.now() },
+        { verb: "sich verlassen", meaning: "to rely", preposition: "auf + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "sich verlieben", meaning: "to fall in love", preposition: "in + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "verstehen", meaning: "to understand", preposition: "von + Dativ", level: 0, nextReview: Date.now(), notes: "etwas verstehen" },
+        { verb: "sich vorbereiten", meaning: "to prepare", preposition: "auf + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "warten", meaning: "to wait", preposition: "auf + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "sich wenden", meaning: "to turn to", preposition: "an + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "sich wundern", meaning: "to wonder/be surprised", preposition: "über + Akkusativ", level: 0, nextReview: Date.now() },
+        { verb: "zweifeln", meaning: "to doubt", preposition: "an + Dativ", level: 0, nextReview: Date.now() }
+      ];
+
+      // Load verb data from localStorage or use initial data
+      const [verbData, setVerbData] = useState(() => {
+        const savedData = localStorage.getItem('germanVerbData');
+        return savedData ? JSON.parse(savedData) : initialVerbData;
+      });
+
+      // Current review verb
+      const [currentVerb, setCurrentVerb] = useState(null);
+
+      // UI states
+      const [showAnswer, setShowAnswer] = useState(false);
+      const [inputAnswer, setInputAnswer] = useState('');
+      const [reviewMode, setReviewMode] = useState('verb'); // 'verb', 'meaning', 'preposition'
+      const [reviewCount, setReviewCount] = useState(0);
+      const [showCompleted, setShowCompleted] = useState(false);
+      const [statsView, setStatsView] = useState(false);
+
+      // German UI translations
+      const translations = {
+        title: "Wiederholungssystem für deutsche Verben",
+        startReview: "Übung starten",
+        showAnswer: "Antwort zeigen",
+        didntKnow: "Nicht gewusst",
+        knew: "Gewusst",
+        back: "Zurück",
+        resetProgress: "Fortschritt zurücksetzen",
+        allDone: "Alles erledigt!",
+        completedReviews: "Du hast alle Wiederholungen für jetzt abgeschlossen.",
+        cardsReviewed: "Karten in dieser Sitzung wiederholt:",
+        viewStats: "Statistik anzeigen",
+        learningProgress: "Lernfortschritt",
+        dueForReview: "Fällig zur Wiederholung:",
+        totalVerbs: "Verben insgesamt:",
+        knowledgeLevels: "Wissensstufen:",
+        level: "Stufe",
+        testMeaning: "Bedeutung testen",
+        testVerb: "Verb testen",
+        testPreposition: "Präposition testen",
+        optional: "optional",
+        typeAnswer: "Gib deine Antwort hier ein (optional)",
+        answer: "Antwort:",
+        verbs: "Verben",
+        resetConfirm: "Bist du sicher, dass du den gesamten Fortschritt zurücksetzen möchtest?"
+      };
+
+      // Save verb data to localStorage when it changes
+      useEffect(() => {
+        localStorage.setItem('germanVerbData', JSON.stringify(verbData));
+      }, [verbData]);
+
+      // Calculate intervals for spaced repetition (in milliseconds)
+      const getNextReviewTime = (level) => {
+        const intervals = [
+          1000 * 60 * 10,       // Level 0: 10 minutes
+          1000 * 60 * 60,       // Level 1: 1 hour
+          1000 * 60 * 60 * 24,  // Level 2: 1 day
+          1000 * 60 * 60 * 24 * 3,  // Level 3: 3 days
+          1000 * 60 * 60 * 24 * 7,  // Level 4: 1 week
+          1000 * 60 * 60 * 24 * 14, // Level 5: 2 weeks
+          1000 * 60 * 60 * 24 * 30  // Level 6: 1 month
+        ];
+        return Date.now() + intervals[Math.min(level, intervals.length - 1)];
+      };
+
+      // Get the next verb for review
+      const getNextReviewVerb = () => {
+        const now = Date.now();
+        const dueVerbs = verbData
+          .filter(verb => verb.nextReview <= now)
+          .sort(() => Math.random() - 0.5); // Randomize the order
+
+        if (dueVerbs.length > 0) {
+          setCurrentVerb(dueVerbs[0]);
+          setShowAnswer(false);
+          setInputAnswer('');
+          return true;
+        } else {
+          setCurrentVerb(null);
+          setShowCompleted(true);
+          return false;
+        }
+      };
+
+      // Start or continue the review session
+      const startReview = () => {
+        setShowCompleted(false);
+        setStatsView(false);
+        getNextReviewVerb();
+      };
+
+      // Handle "I knew it" response
+      const handleKnew = () => {
+        if (!currentVerb) return;
+
+        setVerbData(prevData =>
+          prevData.map(verb =>
+            verb.verb === currentVerb.verb
+              ? {
+                  ...verb,
+                  level: Math.min(6, verb.level + 1),
+                  nextReview: getNextReviewTime(verb.level + 1)
+                }
+              : verb
+          )
+        );
+
+        setShowAnswer(false);
+        setInputAnswer('');
+        setReviewCount(prev => prev + 1);
+        getNextReviewVerb();
+      };
+
+      // Handle "I didn't know it" response
+      const handleDidntKnow = () => {
+        if (!currentVerb) return;
+
+        setVerbData(prevData =>
+          prevData.map(verb =>
+            verb.verb === currentVerb.verb
+              ? {
+                  ...verb,
+                  level: 0,
+                  nextReview: getNextReviewTime(0)
+                }
+              : verb
+          )
+        );
+
+        setShowAnswer(false);
+        setInputAnswer('');
+        setReviewCount(prev => prev + 1);
+        getNextReviewVerb();
+      };
+
+      // Reset all progress
+      const resetAll = () => {
+        if (window.confirm(translations.resetConfirm)) {
+          setVerbData(initialVerbData);
+          setCurrentVerb(null);
+          setShowAnswer(false);
+          setInputAnswer('');
+          setReviewCount(0);
+          setShowCompleted(false);
+        }
+      };
+
+      // Toggle review mode
+      const changeReviewMode = (mode) => {
+        setReviewMode(mode);
+        setShowAnswer(false);
+        setInputAnswer('');
+      };
+
+      // Get stats about learning progress
+      const getStats = () => {
+        const now = Date.now();
+        const dueVerbs = verbData.filter(verb => verb.nextReview <= now).length;
+
+        const levelCounts = verbData.reduce((acc, verb) => {
+          acc[verb.level] = (acc[verb.level] || 0) + 1;
+          return acc;
+        }, {});
+
+        return {
+          dueVerbs,
+          totalVerbs: verbData.length,
+          levels: levelCounts
+        };
+      };
+
+      // Determine the question to display based on review mode
+      const getQuestion = () => {
+        if (!currentVerb) return '';
+
+        switch (reviewMode) {
+          case 'verb':
+            return `Was sind die Bedeutung und Präposition für "${currentVerb.verb}"?`;
+          case 'meaning':
+            return `Welches deutsche Verb bedeutet "${currentVerb.meaning}"?`;
+          case 'preposition':
+            return `Welche Präposition verwendet das Verb "${currentVerb.verb}"?`;
+          default:
+            return '';
+        }
+      };
+
+      // Determine what to show as the answer
+      const getAnswer = () => {
+        if (!currentVerb) return '';
+
+        let notes = currentVerb.notes ? ` (${currentVerb.notes})` : '';
+
+        switch (reviewMode) {
+          case 'verb':
+            return `${currentVerb.meaning} - ${currentVerb.preposition}${notes}`;
+          case 'meaning':
+            return `${currentVerb.verb} - ${currentVerb.preposition}${notes}`;
+          case 'preposition':
+            return `${currentVerb.preposition} - ${currentVerb.meaning}${notes}`;
+          default:
+            return '';
+        }
+      };
+
+      // Initialize on first load
+      useEffect(() => {
+        startReview();
+      }, []);
+
+      // Stats view
+      const stats = getStats();
+
+      const renderStats = () => (
+        <div className="p-4 max-w-md mx-auto">
+          <h2 className="text-xl font-bold mb-4">{translations.learningProgress}</h2>
+          <div className="bg-blue-50 p-4 rounded-lg mb-4">
+            <p><strong>{translations.dueForReview}</strong> {stats.dueVerbs} {translations.verbs}</p>
+            <p><strong>{translations.totalVerbs}</strong> {stats.totalVerbs}</p>
+          </div>
+
+          <h3 className="font-bold mb-2">{translations.knowledgeLevels}</h3>
+          <div className="space-y-2">
+            {[0, 1, 2, 3, 4, 5, 6].map(level => {
+              const count = stats.levels[level] || 0;
+              const percent = Math.round((count / stats.totalVerbs) * 100);
+              return (
+                <div key={level} className="flex items-center">
+                  <div className="w-24">{translations.level} {level}:</div>
+                  <div className="flex-1 bg-gray-200 rounded-full h-4 mx-2">
+                    <div
+                      className="bg-blue-600 rounded-full h-4"
+                      style={{ width: `${percent}%` }}
+                    />
+                  </div>
+                  <div className="w-16 text-right">{count} ({percent}%)</div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex justify-between mt-6">
+            <button
+              onClick={() => setStatsView(false)}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              {translations.back}
+            </button>
+            <button
+              onClick={resetAll}
+              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            >
+              {translations.resetProgress}
+            </button>
+          </div>
+        </div>
+      );
+
+      // Main review interface
+      const renderReview = () => {
+        if (showCompleted) {
+          return (
+            <div className="text-center p-4">
+              <h2 className="text-xl font-bold mb-4">{translations.allDone}</h2>
+              <p className="mb-4">{translations.completedReviews}</p>
+              <p className="mb-4">{translations.cardsReviewed} {reviewCount}</p>
+              <button
+                onClick={() => setStatsView(true)}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2"
+              >
+                {translations.viewStats}
+              </button>
+            </div>
+          );
+        }
+
+        if (!currentVerb) {
+          return (
+            <div className="text-center p-4">
+              <button
+                onClick={startReview}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                {translations.startReview}
+              </button>
+            </div>
+          );
+        }
+
+        return (
+          <div className="p-4 max-w-md mx-auto">
+            <div className="mb-4 flex justify-between">
+              <button
+                className={`px-2 py-1 rounded ${reviewMode === 'verb' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                onClick={() => changeReviewMode('verb')}
+              >
+                {translations.testMeaning}
+              </button>
+              <button
+                className={`px-2 py-1 rounded ${reviewMode === 'meaning' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                onClick={() => changeReviewMode('meaning')}
+              >
+                {translations.testVerb}
+              </button>
+              <button
+                className={`px-2 py-1 rounded ${reviewMode === 'preposition' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                onClick={() => changeReviewMode('preposition')}
+              >
+                {translations.testPreposition}
+              </button>
+            </div>
+
+            <div className="mb-6">
+              <h3 className="text-lg font-bold mb-2">{getQuestion()}</h3>
+
+              <input
+                type="text"
+                value={inputAnswer}
+                onChange={(e) => setInputAnswer(e.target.value)}
+                placeholder={translations.typeAnswer}
+                className="w-full p-2 border rounded mb-2"
+              />
+
+              {!showAnswer ? (
+                <button
+                  onClick={() => setShowAnswer(true)}
+                  className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                  {translations.showAnswer}
+                </button>
+              ) : (
+                <div>
+                  <div className="bg-gray-100 p-3 rounded mb-4">
+                    <strong>{translations.answer}</strong> {getAnswer()}
+                  </div>
+
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={handleDidntKnow}
+                      className="flex-1 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                      {translations.didntKnow}
+                    </button>
+                    <button
+                      onClick={handleKnew}
+                      className="flex-1 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                    >
+                      {translations.knew}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="text-sm text-gray-600">
+              <p>{translations.level}: {currentVerb.level} ({translations.cardsReviewed}: {reviewCount})</p>
+              <p>{translations.dueForReview} {stats.dueVerbs}</p>
+            </div>
+
+            <div className="mt-4 flex justify-between">
+              <button
+                onClick={() => setStatsView(true)}
+                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm"
+              >
+                {translations.viewStats}
+              </button>
+            </div>
+          </div>
+        );
+      };
+
+      return (
+        <div className="bg-white rounded-lg shadow-lg max-w-md mx-auto">
+          <div className="bg-blue-600 text-white p-4 rounded-t-lg">
+            <h1 className="text-xl font-bold">{translations.title}</h1>
+          </div>
+
+          {statsView ? renderStats() : renderReview()}
+        </div>
+      );
+    };
+
+    ReactDOM.render(<SpacedRepetitionSystem />, document.getElementById('root'));
+  </script>
+</body>
+</html>
