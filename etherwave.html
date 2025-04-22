@@ -301,29 +301,6 @@
                 { note: 'C#5', freq: 554.37 }
             ];
 
-            // Aphex Twin Inspired MIDI Sequence
-            const midiSequence = {
-                violin: [
-                    { pitch: ['C4'], duration: '2' },
-                    { pitch: ['E4'], duration: '4' },
-                    { pitch: ['G4'], duration: '4' },
-                    { pitch: ['B4'], duration: '2' },
-                    { pitch: ['D5'], duration: '4' },
-                    { pitch: ['F4'], duration: '2' }
-                ],
-                organ: [
-                    { pitch: ['C3'], duration: '1' },
-                    { pitch: ['G2'], duration: '1' },
-                    { pitch: ['E3'], duration: '1' }
-                ],
-                piano: [
-                    { pitch: ['C5'], duration: '8' },
-                    { pitch: ['G4'], duration: '16' },
-                    { pitch: ['E5'], duration: '8' },
-                    { pitch: ['B4'], duration: '16' }
-                ]
-            };
-
             // Create magical hand trails
             function createHandTrails() {
                 // Left hand trail
@@ -604,16 +581,16 @@
                     masterGain = audioCtx.createGain();
                     masterGain.gain.value = 0;
 
-                    // Create filter
+                    // Create filter with more subtle characteristics
                     filter = audioCtx.createBiquadFilter();
                     filter.type = 'lowpass';
-                    filter.frequency.value = 400;
-                    filter.Q.value = 3; // Lower resonance for smoother sound
+                    filter.frequency.value = 800; // Higher base frequency for more brightness
+                    filter.Q.value = 3; // Higher Q for more resonance, creating a more ethereal sound
 
                     // Create reverb effect
                     reverb = createReverbEffect();
 
-                    // Create reverb mix
+                    // Create reverb mix with more pronounced effect
                     reverbGain = audioCtx.createGain();
                     reverbGain.gain.value = 0;
 
@@ -640,29 +617,30 @@
 
             // Create reverb effect - longer and smoother for fluid sound
             function createReverbEffect() {
-                const seconds = 4.0;
+                const seconds = 6.0; // Longer reverb time for more atmospheric effect
                 const sampleRate = audioCtx.sampleRate;
                 const length = Math.floor(seconds * sampleRate);
                 const impulse = audioCtx.createBuffer(2, length, sampleRate);
                 const leftChannel = impulse.getChannelData(0);
                 const rightChannel = impulse.getChannelData(1);
 
-                // Create smoother reverb
+                // Create more complex, shimmering reverb
                 for (let i = 0; i < length; i++) {
                     const n = i / length;
-                    const decay = Math.pow(1 - n, 1.2);
-                    const randomValue = Math.random() * 1.5 - 0.75;
+                    // Use a more complex decay curve for smoother tail
+                    const decay = Math.pow(1 - n, 1.5);
+                    // Add more complex modulation for shimmering effect
+                    const randomValue = Math.sin(n * Math.PI * 4) * Math.random() * 0.5;
 
                     leftChannel[i] = randomValue * decay;
-                    rightChannel[i] = (randomValue * 0.95 + (Math.random() * 0.1 - 0.05)) * decay;
+                    rightChannel[i] = (randomValue * 0.9 + Math.sin(n * Math.PI * 5) * 0.1) * decay;
                 }
 
                 const convolver = audioCtx.createConvolver();
                 convolver.buffer = impulse;
                 return convolver;
             }
-
-            // Create oscillators for smooth, fluid film scoring sound
+// Create oscillators with automatic vibrato using LFO
             function createOscillators() {
                 // Clean up any existing oscillators
                 oscillators.forEach(osc => {
@@ -678,46 +656,106 @@
 
                 oscillators = [];
 
-                // Main sine oscillator for smooth foundation
+                // Create LFO for vibrato
+                const vibratoLFO = audioCtx.createOscillator();
+                vibratoLFO.type = 'sine';
+                vibratoLFO.frequency.value = 5; // 5 Hz vibrato rate
+
+                const vibratoGain = audioCtx.createGain();
+                vibratoGain.gain.value = 10; // Vibrato depth (cents of pitch deviation)
+
+                // Connect LFO to pitch modulation
+                vibratoLFO.connect(vibratoGain);
+
+                // Main oscillator with more complex waveform
                 const mainOsc = audioCtx.createOscillator();
-                mainOsc.type = 'sine';
+                mainOsc.type = 'sawtooth'; // More harmonically rich waveform
                 const mainGain = audioCtx.createGain();
                 mainGain.gain.value = 0;
+
+                // Create pitch modulation connection
+                const mainOscPitchModulation = new GainNode(audioCtx);
+                vibratoGain.connect(mainOscPitchModulation);
+                mainOscPitchModulation.connect(mainOsc.detune);
+
                 mainOsc.connect(mainGain);
                 mainGain.connect(filter);
-                oscillators.push({ oscillator: mainOsc, gain: mainGain, detune: 0 });
+                oscillators.push({
+                    oscillator: mainOsc,
+                    gain: mainGain,
+                    detune: 0,
+                    vibratoLFO: vibratoLFO,
+                    vibratoGain: vibratoGain
+                });
 
-                // Sub-oscillator (one octave down)
+                // Sub-oscillator with softer attack
                 const subOsc = audioCtx.createOscillator();
-                subOsc.type = 'sine';
+                subOsc.type = 'triangle'; // Softer timbre
                 const subGain = audioCtx.createGain();
                 subGain.gain.value = 0;
+
+                // Create pitch modulation for sub-oscillator
+                const subOscPitchModulation = new GainNode(audioCtx);
+                vibratoGain.connect(subOscPitchModulation);
+                subOscPitchModulation.connect(subOsc.detune);
+
                 subOsc.connect(subGain);
                 subGain.connect(filter);
                 subOsc.detune.value = -1200; // One octave lower
-                oscillators.push({ oscillator: subOsc, gain: subGain, detune: -1200 });
+                oscillators.push({
+                    oscillator: subOsc,
+                    gain: subGain,
+                    detune: -1200,
+                    vibratoLFO: null, // Already connected in main oscillator
+                    vibratoGain: null
+                });
 
-                // Subtle fifth harmonic for richness
-                const fifthOsc = audioCtx.createOscillator();
-                fifthOsc.type = 'sine';
-                const fifthGain = audioCtx.createGain();
-                fifthGain.gain.value = 0;
-                fifthOsc.connect(fifthGain);
-                fifthGain.connect(filter);
-                fifthOsc.detune.value = 700; // Perfect fifth
-                oscillators.push({ oscillator: fifthOsc, gain: fifthGain, detune: 700 });
+                // Add more layers for depth
+                const layerOsc1 = audioCtx.createOscillator();
+                layerOsc1.type = 'sine';
+                const layerGain1 = audioCtx.createGain();
+                layerGain1.gain.value = 0;
 
-                // Very subtle minor third for tension
-                const minorThirdOsc = audioCtx.createOscillator();
-                minorThirdOsc.type = 'sine';
-                const minorThirdGain = audioCtx.createGain();
-                minorThirdGain.gain.value = 0;
-                minorThirdOsc.connect(minorThirdGain);
-                minorThirdGain.connect(filter);
-                minorThirdOsc.detune.value = 300; // Minor third
-                oscillators.push({ oscillator: minorThirdOsc, gain: minorThirdGain, detune: 300 });
+                // Create pitch modulation for layer 1
+                const layer1PitchModulation = new GainNode(audioCtx);
+                vibratoGain.connect(layer1PitchModulation);
+                layer1PitchModulation.connect(layerOsc1.detune);
+
+                layerOsc1.connect(layerGain1);
+                layerGain1.connect(filter);
+                layerOsc1.detune.value = 100; // Slight detuning for chorus-like effect
+                oscillators.push({
+                    oscillator: layerOsc1,
+                    gain: layerGain1,
+                    detune: 100,
+                    vibratoLFO: null, // Already connected in main oscillator
+                    vibratoGain: null
+                });
+
+                const layerOsc2 = audioCtx.createOscillator();
+                layerOsc2.type = 'sine';
+                const layerGain2 = audioCtx.createGain();
+                layerGain2.gain.value = 0;
+
+                // Create pitch modulation for layer 2
+                const layer2PitchModulation = new GainNode(audioCtx);
+                vibratoGain.connect(layer2PitchModulation);
+                layer2PitchModulation.connect(layerOsc2.detune);
+
+                layerOsc2.connect(layerGain2);
+                layerGain2.connect(filter);
+                layerOsc2.detune.value = -100; // Opposite detuning
+                oscillators.push({
+                    oscillator: layerOsc2,
+                    gain: layerGain2,
+                    detune: -100,
+                    vibratoLFO: null, // Already connected in main oscillator
+                    vibratoGain: null
+                });
+
+                // Start the LFO for the main oscillator
+                vibratoLFO.start();
             }
-
             // Start theremin
             function startTheremin() {
                 if (!audioCtx) {
@@ -845,6 +883,14 @@
                             }
                             if (osc.gain) {
                                 osc.gain.disconnect();
+                            }
+                            // Stop the vibrato LFO (only for the first oscillator)
+                            if (osc.vibratoLFO) {
+                                osc.vibratoLFO.stop();
+                                osc.vibratoLFO.disconnect();
+                            }
+                            if (osc.vibratoGain) {
+                                osc.vibratoGain.disconnect();
                             }
                         });
 
