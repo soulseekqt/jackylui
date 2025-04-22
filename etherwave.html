@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Etherwave</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Macondo&family=National+Park&display=swap" rel="stylesheet">
+
+  <!-- MediaPipe dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+  <style>
+      body, html {
+          margin: 0;
+          padding: 0;
+          height: 100%;
+          overflow: hidden;
+          font-family: 'National Park', sans-serif;
+          background: linear-gradient(135deg, #0a1525 0%, #1a2535 100%);
+          color: #d9f0ff;
+      }
+
+      .app-title {
+          position: absolute;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          font-family: 'Macondo', cursive;
+          font-size: 4rem;
+          color: white;
+          z-index: 200;
+          pointer-events: none;
+          letter-spacing: 2px;
+          margin-bottom: 40px;
+      }
+
+      .back-button {
+          position: absolute;
+          bottom: 40px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: linear-gradient(135deg, #8b8b8b 0%, #5a5a5a 100%);
+          color: #e8d8b0;
+          border: 3px solid #4a3a2a;
+          padding: 8px 16px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 16px;
+          font-family: 'Macondo', cursive;
+          transition: all 0.1s;
+          z-index: 200;
+          text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+          letter-spacing: 1px;
+
+      }
+
+      .back-button:hover {
+          background: linear-gradient(135deg, #9b9b9b 0%, #6a6a6a 100%);
+          transform: translateX(-50%) translateY(-1px);
+      }
+
+      .back-button:active {
+          transform: translateX(-50%) translateY(1px);
+      }
+
+      .hand-tracking-label {
+          position: absolute;
+          background: transparent;
+          color: white;
+          font-size: 16px;
+          font-family: 'National Park', sans-serif;
+          white-space: nowrap;
+          z-index: 150;
+          pointer-events: none;
+          transition: opacity 0.2s ease;
+          transform: translate(-50%, -50%);
+          text-align: center;
+      }
+
+      .hand-tracking-label.hide {
+          opacity: 0;
+      }
+
+      .status-panel {
+          position: absolute;
+          top: 10px;
+          left: 10px;
+          display: flex;
+          gap: 10px;
+          z-index: 100;
+      }
+
+      .status-display {
+          background: rgba(20, 30, 50, 0.7);
+          border: 1px solid rgba(100, 180, 255, 0.3);
+          border-radius: 8px;
+          padding: 8px;
+          color: #d9f0ff;
+          font-weight: bold;
+          backdrop-filter: blur(5px);
+          box-shadow: 0 0 10px rgba(0, 100, 255, 0.2);
+      }
+
+      .container {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+      }
+
+
+        #video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #video-element {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1); /* Mirror video */
+        }
+
+        #canvas-element {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: scaleX(-1); /* Mirror canvas */
+            z-index: 10;
+        }
+
+        .controls {
+            display: none;
+        }
+
+        .status-panel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .status-display {
+            background: rgba(20, 30, 50, 0.7);
+            border: 1px solid rgba(100, 180, 255, 0.3);
+            border-radius: 8px;
+            padding: 8px;
+            color: #d9f0ff;
+            font-weight: bold;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 10px rgba(0, 100, 255, 0.2);
+        }
+
+        .note-markers {
+            display: none;
+        }
+
+        .magical-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 15;
+        }
+
+        @keyframes floatParticle {
+            0% { transform: translate(0, 0) scale(0.8); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+
+        .particle {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--color-center) 0%, var(--color-outer) 70%, transparent 100%);
+            filter: blur(2px);
+            box-shadow: 0 0 15px var(--color-glow);
+            opacity: 0;
+            animation: floatParticle 1.5s ease-out forwards;
+        }
+
+        .hand-trail {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(5px);
+            opacity: 0.7;
+            pointer-events: none;
+            mix-blend-mode: screen;
+            z-index: 12;
+        }
+
+        .left-hand-effect {
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.7);
+        }
+
+        .right-hand-effect {
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.7);
+        }
+    </style>
+</head>
+<body>
+  <body>
+    <div class="container">
+        <h1 class="app-title">Etherwave</h1>
+        <button class="back-button" id="startStopButton">Cast Spell</button>
+
+        <div id="video-container">
+            <video id="video-element" playsinline></video>
+            <canvas id="canvas-element"></canvas>
+            <div class="magical-particles" id="magical-particles"></div>
+            <div id="hand-tracking-container"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM Elements
+            const videoElement = document.getElementById('video-element');
+            const canvasElement = document.getElementById('canvas-element');
+            const canvasCtx = canvasElement.getContext('2d');
+            const particlesContainer = document.getElementById('magical-particles');
+            const handTrackingContainer = document.getElementById('hand-tracking-container');
+            const startStopButton = document.getElementById('startStopButton');
+
+            // Create hand tracking labels
+            const leftHandDisplay = document.createElement('div');
+            leftHandDisplay.className = 'hand-tracking-label hide';
+            handTrackingContainer.appendChild(leftHandDisplay);
+
+            const rightHandDisplay = document.createElement('div');
+            rightHandDisplay.className = 'hand-tracking-label hide';
+            handTrackingContainer.appendChild(rightHandDisplay);
+
+            // Magical effect elements
+            let leftHandTrail = null;
+            let rightHandTrail = null;
+            let particles = [];
+            const maxParticles = 200;
+
+            // MediaPipe variables
+            let hands;
+            let camera;
+
+            // Audio Context and nodes
+            let audioCtx;
+            let masterGain;
+            let oscillators = [];
+            let filter;
+            let reverb;
+            let reverbGain;
+            let dryGain;
+            let isPlaying = false;
+            let autoStopTimeout = null;
+
+            // Hand tracking state
+            let leftHandActive = false;
+            let rightHandActive = false;
+            let currentPitch = 0.5;    // 0-1 range (vertical position)
+            let currentReverb = 0.5;   // 0-1 range (horizontal position)
+            let currentHarmonics = 0.5; // 0-1 range (vertical position)
+            let currentFilter = 0.5;   // 0-1 range (horizontal position)
+
+            // D major scale frequencies - moved up an octave
+            const dMajorScale = [
+                { note: 'D3', freq: 146.83 },
+                { note: 'E3', freq: 164.81 },
+                { note: 'F#3', freq: 184.99 },
+                { note: 'G3', freq: 196.00 },
+                { note: 'A3', freq: 220.00 },
+                { note: 'B3', freq: 246.94 },
+                { note: 'C#4', freq: 277.18 },
+                { note: 'D4', freq: 293.66 },
+                { note: 'E4', freq: 329.63 },
+                { note: 'F#4', freq: 369.99 },
+                { note: 'G4', freq: 392.00 },
+                { note: 'A4', freq: 440.00 },
+                { note: 'B4', freq: 493.88 },
+                { note: 'C#5', freq: 554.37 }
+            ];
+
+            // Aphex Twin Inspired MIDI Sequence
+            const midiSequence = {
+                violin: [
+                    { pitch: ['C4'], duration: '2' },
+                    { pitch: ['E4'], duration: '4' },
+                    { pitch: ['G4'], duration: '4' },
+                    { pitch: ['B4'], duration: '2' },
+                    { pitch: ['D5'], duration: '4' },
+                    { pitch: ['F4'], duration: '2' }
+                ],
+                organ: [
+                    { pitch: ['C3'], duration: '1' },
+                    { pitch: ['G2'], duration: '1' },
+                    { pitch: ['E3'], duration: '1' }
+                ],
+                piano: [
+                    { pitch: ['C5'], duration: '8' },
+                    { pitch: ['G4'], duration: '16' },
+                    { pitch: ['E5'], duration: '8' },
+                    { pitch: ['B4'], duration: '16' }
+                ]
+            };
+
+            // Create magical hand trails
+            function createHandTrails() {
+                // Left hand trail
+                leftHandTrail = document.createElement('div');
+                leftHandTrail.className = 'hand-trail left-hand-effect';
+                leftHandTrail.style.width = '100px';
+                leftHandTrail.style.height = '100px';
+                leftHandTrail.style.display = 'none';
+                particlesContainer.appendChild(leftHandTrail);
+
+                // Right hand trail
+                rightHandTrail = document.createElement('div');
+                rightHandTrail.className = 'hand-trail right-hand-effect';
+                rightHandTrail.style.width = '100px';
+                rightHandTrail.style.height = '100px';
+                rightHandTrail.style.display = 'none';
+                particlesContainer.appendChild(rightHandTrail);
+            }
+
+            // Create a magical particle
+            function createParticle(x, y, isLeftHand) {
+                if (particles.length >= maxParticles) {
+                    // Recycle an old particle
+                    const oldParticle = particles.shift();
+                    particlesContainer.removeChild(oldParticle);
+                }
+
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+
+                // Set colors for each hand
+                if (isLeftHand) {
+                    particle.style.setProperty('--color-center', 'rgba(255, 255, 255, 1)');
+                    particle.style.setProperty('--color-outer', 'rgba(255, 255, 255, 0.7)');
+                    particle.style.setProperty('--color-glow', 'rgba(255, 255, 255, 0.9)');
+                } else {
+                    particle.style.setProperty('--color-center', 'rgba(255, 255, 255, 1)');
+                    particle.style.setProperty('--color-outer', 'rgba(255, 255, 255, 0.7)');
+                    particle.style.setProperty('--color-glow', 'rgba(255, 255, 255, 0.9)');
+                }
+
+                // Set position
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+
+                // Set random size (10-20px)
+                const size = 10 + Math.random() * 10;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+
+                // Set random float direction
+                const tx = (Math.random() - 0.5) * 150;
+                const ty = (Math.random() - 0.5) * 150 - 50; // More upward bias
+                particle.style.setProperty('--tx', `${tx}px`);
+                particle.style.setProperty('--ty', `${ty}px`);
+
+                // Add to container and track
+                particlesContainer.appendChild(particle);
+                particles.push(particle);
+
+                // Auto-remove after animation completes
+                setTimeout(() => {
+                    if (particles.includes(particle)) {
+                        const index = particles.indexOf(particle);
+                        if (index > -1) {
+                            particles.splice(index, 1);
+                        }
+                        if (particle.parentNode === particlesContainer) {
+                            particlesContainer.removeChild(particle);
+                        }
+                    }
+                }, 1500);
+            }
+
+            // Process hand tracking results
+            function onHandResults(results) {
+                if (!results || !results.multiHandLandmarks) {
+                    // Hide trails if no hands detected
+                    if (leftHandTrail) leftHandTrail.style.display = 'none';
+                    if (rightHandTrail) rightHandTrail.style.display = 'none';
+
+                    // Stop immediately if no hands detected
+                    if (isPlaying) {
+                        stopTheremin();
+                    }
+
+                    leftHandActive = false;
+                    rightHandActive = false;
+                    return;
+                }
+
+                // Only process hands if the theremin is playing
+                if (!isPlaying) {
+                    // Hide trails and labels when not playing
+                    if (leftHandTrail) leftHandTrail.style.display = 'none';
+                    if (rightHandTrail) rightHandTrail.style.display = 'none';
+                    leftHandDisplay.classList.add('hide');
+                    rightHandDisplay.classList.add('hide');
+                    return;
+                }
+
+                // Clear any existing auto-stop timeout
+                if (autoStopTimeout) {
+                    clearTimeout(autoStopTimeout);
+                    autoStopTimeout = null;
+                }
+
+                // Reset hand states
+                leftHandActive = false;
+                rightHandActive = false;
+
+                // Process hands
+                if (results.multiHandLandmarks && results.multiHandedness) {
+                    for (let i = 0; i < results.multiHandLandmarks.length; i++) {
+                        const landmarks = results.multiHandLandmarks[i];
+                        const handedness = results.multiHandedness[i].label;
+
+                        // Calculate position between index finger and thumb
+                        const indexTip = landmarks[8];
+                        const thumbTip = landmarks[4];
+
+                        // Check if landmarks are valid
+                        if (!indexTip || !thumbTip) continue;
+
+                        const centerX = (indexTip.x + thumbTip.x) / 2;
+                        const centerY = (indexTip.y + thumbTip.y) / 2;
+
+                        // Clamp values to prevent out-of-bounds
+                        const clampedX = Math.max(0, Math.min(1, centerX));
+                        const clampedY = Math.max(0, Math.min(1, centerY));
+
+                        const pixelX = (1 - clampedX) * canvasElement.width;
+                        const pixelY = clampedY * canvasElement.height;
+
+                        // Generate magical particles
+                        if (Math.random() < 0.3) {
+                            const numParticles = 2 + Math.floor(Math.random() * 3);
+                            for (let p = 0; p < numParticles; p++) {
+                                const offsetX = (Math.random() - 0.5) * 20;
+                                const offsetY = (Math.random() - 0.5) * 20;
+                                createParticle(pixelX + offsetX, pixelY + offsetY, handedness === 'Left');
+                            }
+                        }
+
+                        // Process based on handedness
+                        if (handedness === 'Left') {
+                            rightHandActive = true;
+                            currentHarmonics = 1 - clampedY;
+                            currentFilter = 1 - clampedX;
+
+                            // Update right hand magical trail
+                            if (rightHandTrail) {
+                                rightHandTrail.style.display = 'block';
+                                rightHandTrail.style.left = `${pixelX - 50}px`;
+                                rightHandTrail.style.top = `${pixelY - 50}px`;
+                                const baseSize = 80 + (currentFilter * 50);
+                                rightHandTrail.style.width = `${baseSize}px`;
+                                rightHandTrail.style.height = `${baseSize}px`;
+                            }
+
+                            // Update right hand label
+                            rightHandDisplay.style.left = `${pixelX}px`;
+                            rightHandDisplay.style.top = `${pixelY - 60}px`;
+                            rightHandDisplay.textContent = `Harmonics ${Math.round(currentHarmonics * 100)}% • Filter ${Math.round(currentFilter * 100)}%`;
+                            rightHandDisplay.classList.remove('hide');
+                        } else {
+                            leftHandActive = true;
+                            // Reduce sensitivity by using a non-linear mapping
+                            const rawPitch = 1 - clampedY;
+                            currentPitch = Math.pow(rawPitch, 2); // Quadratic mapping for less sensitivity
+                            currentReverb = 1 - clampedX;
+
+                            // Get the note based on position with reduced sensitivity
+                            const indexFloat = currentPitch * (dMajorScale.length - 1);
+                            const nearestIndex = Math.round(indexFloat);
+                            const clampedIndex = Math.max(0, Math.min(nearestIndex, dMajorScale.length - 1));
+
+                            // Update left hand magical trail
+                            if (leftHandTrail) {
+                                leftHandTrail.style.display = 'block';
+                                leftHandTrail.style.left = `${pixelX - 50}px`;
+                                leftHandTrail.style.top = `${pixelY - 50}px`;
+                                const baseSize = 80 + (currentPitch * 50);
+                                leftHandTrail.style.width = `${baseSize}px`;
+                                leftHandTrail.style.height = `${baseSize}px`;
+                            }
+
+                            // Update left hand label
+                            leftHandDisplay.style.left = `${pixelX}px`;
+                            leftHandDisplay.style.top = `${pixelY - 60}px`;
+                            leftHandDisplay.textContent = `${dMajorScale[clampedIndex].note} • Reverb ${Math.round(currentReverb * 100)}%`;
+                            leftHandDisplay.classList.remove('hide');
+                        }
+                    }
+                }
+
+                // Hide labels if hands not active
+                if (!leftHandActive) {
+                    leftHandDisplay.classList.add('hide');
+                }
+                if (!rightHandActive) {
+                    rightHandDisplay.classList.add('hide');
+                }
+
+                canvasCtx.restore();
+
+                // Update audio parameters if playing
+                if (isPlaying) {
+                    updateAudioParameters();
+                }
+            }
+
+            // Initialize MediaPipe Hands
+            async function setupMediaPipe() {
+                try {
+                    // Create hands instance
+                    hands = new Hands({
+                        locateFile: (file) => {
+                            return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+                        }
+                    });
+
+                    // Set options
+                    hands.setOptions({
+                        maxNumHands: 2,
+                        modelComplexity: 1,
+                        minDetectionConfidence: 0.5,
+                        minTrackingConfidence: 0.5
+                    });
+
+                    // Set callback for hand detection results
+                    hands.onResults(onHandResults);
+
+                    // Initialize camera
+                    camera = new Camera(videoElement, {
+                        onFrame: async () => {
+                            try {
+                                await hands.send({image: videoElement});
+                            } catch (e) {
+                                console.error("Error processing video frame:", e);
+                                // Attempt to recover by reinitializing the camera
+                                try {
+                                    await camera.stop();
+                                    await camera.start();
+                                } catch (recoveryError) {
+                                    console.error("Failed to recover camera:", recoveryError);
+                                }
+                            }
+                        },
+                        width: window.innerWidth,
+                        height: window.innerHeight
+                    });
+
+                    // Start camera
+                    await camera.start();
+
+                    // Set canvas dimensions
+                    canvasElement.width = window.innerWidth;
+                    canvasElement.height = window.innerHeight;
+
+                    // Create magical hand trails
+                    createHandTrails();
+
+                    return true;
+                } catch (error) {
+                    console.error('Error initializing MediaPipe or camera:', error);
+                    return false;
+                }
+            }
+
+            // Initialize Web Audio API
+            function initAudio() {
+                try {
+                    // Create audio context
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+                    // Create master gain (starts at zero)
+                    masterGain = audioCtx.createGain();
+                    masterGain.gain.value = 0;
+
+                    // Create filter
+                    filter = audioCtx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.value = 400;
+                    filter.Q.value = 3; // Lower resonance for smoother sound
+
+                    // Create reverb effect
+                    reverb = createReverbEffect();
+
+                    // Create reverb mix
+                    reverbGain = audioCtx.createGain();
+                    reverbGain.gain.value = 0;
+
+                    dryGain = audioCtx.createGain();
+                    dryGain.gain.value = 0;
+
+                    // Connect audio graph
+                    filter.connect(dryGain);
+                    filter.connect(reverb);
+                    reverb.connect(reverbGain);
+                    dryGain.connect(masterGain);
+                    reverbGain.connect(masterGain);
+                    masterGain.connect(audioCtx.destination);
+
+                    // Create oscillators but don't start them yet
+                    createOscillators();
+
+                    return true;
+                } catch (error) {
+                    console.error('Audio initialization error:', error);
+                    return false;
+                }
+            }
+
+            // Create reverb effect - longer and smoother for fluid sound
+            function createReverbEffect() {
+                const seconds = 4.0;
+                const sampleRate = audioCtx.sampleRate;
+                const length = Math.floor(seconds * sampleRate);
+                const impulse = audioCtx.createBuffer(2, length, sampleRate);
+                const leftChannel = impulse.getChannelData(0);
+                const rightChannel = impulse.getChannelData(1);
+
+                // Create smoother reverb
+                for (let i = 0; i < length; i++) {
+                    const n = i / length;
+                    const decay = Math.pow(1 - n, 1.2);
+                    const randomValue = Math.random() * 1.5 - 0.75;
+
+                    leftChannel[i] = randomValue * decay;
+                    rightChannel[i] = (randomValue * 0.95 + (Math.random() * 0.1 - 0.05)) * decay;
+                }
+
+                const convolver = audioCtx.createConvolver();
+                convolver.buffer = impulse;
+                return convolver;
+            }
+
+            // Create oscillators for smooth, fluid film scoring sound
+            function createOscillators() {
+                // Clean up any existing oscillators
+                oscillators.forEach(osc => {
+                    if (osc.oscillator) {
+                        try {
+                            osc.oscillator.stop();
+                            osc.oscillator.disconnect();
+                        } catch(e) {
+                            console.error('Error stopping oscillator:', e);
+                        }
+                    }
+                });
+
+                oscillators = [];
+
+                // Main sine oscillator for smooth foundation
+                const mainOsc = audioCtx.createOscillator();
+                mainOsc.type = 'sine';
+                const mainGain = audioCtx.createGain();
+                mainGain.gain.value = 0;
+                mainOsc.connect(mainGain);
+                mainGain.connect(filter);
+                oscillators.push({ oscillator: mainOsc, gain: mainGain, detune: 0 });
+
+                // Sub-oscillator (one octave down)
+                const subOsc = audioCtx.createOscillator();
+                subOsc.type = 'sine';
+                const subGain = audioCtx.createGain();
+                subGain.gain.value = 0;
+                subOsc.connect(subGain);
+                subGain.connect(filter);
+                subOsc.detune.value = -1200; // One octave lower
+                oscillators.push({ oscillator: subOsc, gain: subGain, detune: -1200 });
+
+                // Subtle fifth harmonic for richness
+                const fifthOsc = audioCtx.createOscillator();
+                fifthOsc.type = 'sine';
+                const fifthGain = audioCtx.createGain();
+                fifthGain.gain.value = 0;
+                fifthOsc.connect(fifthGain);
+                fifthGain.connect(filter);
+                fifthOsc.detune.value = 700; // Perfect fifth
+                oscillators.push({ oscillator: fifthOsc, gain: fifthGain, detune: 700 });
+
+                // Very subtle minor third for tension
+                const minorThirdOsc = audioCtx.createOscillator();
+                minorThirdOsc.type = 'sine';
+                const minorThirdGain = audioCtx.createGain();
+                minorThirdGain.gain.value = 0;
+                minorThirdOsc.connect(minorThirdGain);
+                minorThirdGain.connect(filter);
+                minorThirdOsc.detune.value = 300; // Minor third
+                oscillators.push({ oscillator: minorThirdOsc, gain: minorThirdGain, detune: 300 });
+            }
+
+            // Start theremin
+            function startTheremin() {
+                if (!audioCtx) {
+                    initAudio();
+                } else if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                // Reset all parameters to default values
+                currentPitch = 0.5;
+                currentReverb = 0.5;
+                currentHarmonics = 0.5;
+                currentFilter = 0.5;
+                leftHandActive = false;
+                rightHandActive = false;
+
+                // Ensure all gains are at zero
+                masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
+                reverbGain.gain.setValueAtTime(0, audioCtx.currentTime);
+                dryGain.gain.setValueAtTime(0, audioCtx.currentTime);
+
+                // Start oscillators but keep them silent
+                oscillators.forEach(osc => {
+                    if (osc.oscillator) {
+                        osc.oscillator.start();
+                        osc.gain.gain.setValueAtTime(0, audioCtx.currentTime);
+                    }
+                });
+
+                isPlaying = true;
+                startStopButton.textContent = 'Cancel Cast';
+            }
+
+            // Update audio parameters based on hand positions
+            function updateAudioParameters() {
+                if (!isPlaying) return;
+
+                // Only update audio if at least one hand is active
+                if (leftHandActive || rightHandActive) {
+                    // Left hand controls pitch and reverb
+                    if (leftHandActive) {
+                        // Calculate the continuous frequency between notes based on hand position
+                        const position = currentPitch;
+                        const maxIndex = dMajorScale.length - 1;
+
+                        // Find the two nearest notes
+                        const indexFloat = position * maxIndex;
+                        const lowerIndex = Math.floor(indexFloat);
+                        const upperIndex = Math.min(Math.ceil(indexFloat), maxIndex);
+
+                        // Calculate interpolation factor between the two notes (0-1)
+                        const noteFraction = indexFloat - lowerIndex;
+
+                        // Get frequencies of the two nearest notes
+                        const lowerFreq = dMajorScale[lowerIndex].freq;
+                        const upperFreq = dMajorScale[upperIndex].freq;
+
+                        // Calculate the continuous frequency by logarithmic interpolation
+                        const targetFreq = lowerFreq * Math.pow(upperFreq / lowerFreq, noteFraction);
+
+                        // Set frequencies with much smoother transitions
+                        oscillators.forEach(osc => {
+                            const targetWithDetune = targetFreq * Math.pow(2, osc.detune / 1200);
+                            osc.oscillator.frequency.setTargetAtTime(
+                                targetWithDetune,
+                                audioCtx.currentTime,
+                                0.1 // Faster response while still smooth
+                            );
+                        });
+
+                        // Display the nearest note for reference
+                        const nearestIndex = Math.round(indexFloat);
+                        const clampedIndex = Math.max(0, Math.min(nearestIndex, maxIndex));
+                        leftHandDisplay.textContent = `Near ${dMajorScale[clampedIndex].note} • Reverb ${Math.round(currentReverb * 100)}%`;
+
+                        // Control reverb amount
+                        reverbGain.gain.setTargetAtTime(
+                            0.3 + (currentReverb * 0.4),
+                            audioCtx.currentTime,
+                            0.5 // Slow transition for smooth changes
+                        );
+
+                        dryGain.gain.setTargetAtTime(
+                            0.7 - (currentReverb * 0.2),
+                            audioCtx.currentTime,
+                            0.5
+                        );
+
+                        // Fade in if needed
+                        if (masterGain.gain.value < 0.8) {
+                            masterGain.gain.setTargetAtTime(0.8, audioCtx.currentTime, 0.3);
+                        }
+                    }
+
+                    // Right hand controls harmonics and filter
+                    if (rightHandActive) {
+                        // Update oscillator gains based on harmonics
+                        oscillators[0].gain.gain.setTargetAtTime(0.5, audioCtx.currentTime, 0.3);
+                        oscillators[1].gain.gain.setTargetAtTime(0.4 * currentHarmonics, audioCtx.currentTime, 0.3);
+                        oscillators[2].gain.gain.setTargetAtTime(0.12 * currentHarmonics, audioCtx.currentTime, 0.3);
+                        oscillators[3].gain.gain.setTargetAtTime(0.07 * currentHarmonics, audioCtx.currentTime, 0.3);
+
+                        // Update filter
+                        filter.frequency.setTargetAtTime(
+                            400 + (currentFilter * 2000),
+                            audioCtx.currentTime,
+                            0.3
+                        );
+                    }
+                } else {
+                    // No hands active - ensure silence
+                    masterGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
+                }
+            }
+
+            // Stop theremin
+            function stopTheremin() {
+                if (audioCtx) {
+                    try {
+                        // Stop and disconnect all oscillators
+                        oscillators.forEach(osc => {
+                            if (osc.oscillator) {
+                                osc.oscillator.stop();
+                                osc.oscillator.disconnect();
+                            }
+                            if (osc.gain) {
+                                osc.gain.disconnect();
+                            }
+                        });
+
+                        // Disconnect all audio nodes
+                        filter.disconnect();
+                        reverb.disconnect();
+                        reverbGain.disconnect();
+                        dryGain.disconnect();
+                        masterGain.disconnect();
+
+                        // Reset all gains to 0
+                        masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+                        masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
+
+                        reverbGain.gain.cancelScheduledValues(audioCtx.currentTime);
+                        reverbGain.gain.setValueAtTime(0, audioCtx.currentTime);
+
+                        dryGain.gain.cancelScheduledValues(audioCtx.currentTime);
+                        dryGain.gain.setValueAtTime(0, audioCtx.currentTime);
+
+                        // Create new audio context and nodes for next time
+                        audioCtx = null;
+                        masterGain = null;
+                        filter = null;
+                        reverb = null;
+                        reverbGain = null;
+                        dryGain = null;
+                        oscillators = [];
+                    } catch (e) {
+                        console.error('Error stopping theremin:', e);
+                    }
+                }
+
+                isPlaying = false;
+                startStopButton.textContent = 'Cast Spell';
+
+                // Reset hand states
+                leftHandActive = false;
+                rightHandActive = false;
+
+                // Hide trails
+                if (leftHandTrail) leftHandTrail.style.display = 'none';
+                if (rightHandTrail) rightHandTrail.style.display = 'none';
+
+                // Hide labels
+                leftHandDisplay.classList.add('hide');
+                rightHandDisplay.classList.add('hide');
+            }
+
+            // Add click handler for start/stop button
+            startStopButton.addEventListener('click', () => {
+                if (isPlaying) {
+                    stopTheremin();
+                    startStopButton.textContent = 'Cast Spell';
+                } else {
+                    startTheremin();
+                    startStopButton.textContent = 'Cancel Cast';
+                }
+            });
+
+            // Start initialization
+            setupMediaPipe().catch(error => {
+                console.error('Failed to initialize MediaPipe:', error);
+            });
+        });
+    </script>
+</body>
+</html>
