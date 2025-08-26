@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8"/>
     <title>Jacky Lui</title>
-    <meta content="I&#x27;m Jacky Lui. I am a lawyer and writer working in public international law and international litigation. My focus is on human rights, humanitarian law and sustainability." name="description"/>
+    <meta content="Jacky is an international lawyer with experience practising law across international law firms such as Herbert Smith Freehills Kramer, Taylor Wessing and Noerr. He&#x27;s advised corporations and governments particularly in issues of public international law, international investment law, international tax, commercial and investor-state arbitration." name="description"/>
     <meta content="Jacky Lui" property="og:title"/>
-    <meta content="I&#x27;m Jacky Lui. I am a lawyer and writer working in public international law and international litigation. My focus is on human rights, humanitarian law and sustainability." property="og:description"/>
+    <meta content="Jacky is an international lawyer with experience practising law across international law firms such as Herbert Smith Freehills Kramer, Taylor Wessing and Noerr. He&#x27;s advised corporations and governments particularly in issues of public international law, international investment law, international tax, commercial and investor-state arbitration." property="og:description"/>
     <meta content="Jacky Lui" property="twitter:title"/>
-    <meta content="I&#x27;m Jacky Lui. I am a lawyer and writer working in public international law and international litigation. My focus is on human rights, humanitarian law and sustainability." property="twitter:description"/>
+    <meta content="Jacky is an international lawyer with experience practising law across international law firms such as Herbert Smith Freehills Kramer, Taylor Wessing and Noerr. He&#x27;s advised corporations and governments particularly in issues of public international law, international investment law, international tax, commercial and investor-state arbitration." property="twitter:description"/>
     <meta property="og:type" content="website"/>
     <meta content="summary_large_image" name="twitter:card"/>
     <meta content="width=device-width, initial-scale=1" name="viewport"/>
@@ -26,7 +26,7 @@
             font-weight: 200;
         }
 
-        Page border with corner crop marks
+        /* Page border with corner crop marks */
         body::before {
             content: '';
             position: fixed;
@@ -164,34 +164,13 @@
             transform: translateY(-50%);
         }
 
-        /* Content styling */
-        .content-wrapper {
-            /* position: relative;
-            /* background-color: rgba(255, 255, 255, 0.7); */
-            /* border: 1px dashed #ccc;
-            padding: 15px;
-            margin-bottom: 20px; */ */
-        }
+        /* Content styling - intentionally left without styles */
 
-        /* Grid lines */
-        .grid-line {
-            /* position: fixed;
-            background-color: rgba(200, 200, 200, 0.2);
-            z-index: -1;
-            pointer-events: none; */
-        }
+        /* Grid lines - removed placeholder styles */
 
-        .grid-line-h {
-            /* width: 100%;
-            height: 1px;
-            left: 0; */
-        }
+        /* .grid-line-h placeholder removed */
 
-        .grid-line-v {
-            /* height: 100%;
-            width: 1px;
-            top: 0; */
-        }
+        /* .grid-line-v placeholder removed */
 
         /* Print metadata text */
         .print-info {
@@ -341,6 +320,13 @@
             color: #fff;
         } */
 
+        /* About section text justification */
+        h1.body.line_horizontal {
+            text-align: justify;
+            text-justify: inter-word;
+            padding-right: 16px;
+        }
+
         /* Responsive adjustments */
         @media only screen and (max-width: 767px) {
             body {
@@ -353,6 +339,30 @@
 
             .print-info {
                 font-size: 8px;
+            }
+
+            /* Reduce spacing between section headings and first items on mobile */
+            .text-box h1.text-span-13 {
+                margin-bottom: 4px;
+            }
+
+            .text-box h1.body {
+                margin-top: 0;
+            }
+
+            /* Hide leading line break in speaking engagements list on mobile */
+            .text-box h1.body br:first-child {
+                display: none;
+            }
+
+            /* Override large padding under headings like Publications/Projects/Fundraising */
+            .text-span-13 {
+                padding-bottom: 0;
+            }
+
+            /* Tighten top padding on first list item under headings (e.g., Etherwave) */
+            .text-span-14 {
+                padding-top: 0;
             }
         }
     </style>
@@ -442,7 +452,7 @@
             <span class="button-4">About</span>
             <div class="container w-container content-wrapper">
                 <div class="text-box _100px">
-                    <h1 class="body line_horizontal"><span>Jacky Lui</span> is an Australian lawyer specialised in resolving disputes in the energy, mining and technology sectors. He has worked with clients including governments and companies. Notably, he has successfully defended governments in cases involving the environment and sustainable development. <br/><br/> Owing to an interest in emerging technology, Jacky developed programming skills in Python and is adept in data analytics, machine learning and building AI models. He is also knowledgable in front-end web development in React, Next.js and Tailwind CSS. <br/><br/>He received a Bachelor of Laws and Bachelor of Commerce from UNSW Sydney, and completed a Masters of Laws at Humboldt University of Berlin.<br/></h1>
+                    <h1 class="body line_horizontal">Jacky is an international lawyer with experience practising law across international law firms such as Herbert Smith Freehills Kramer, Taylor Wessing and Noerr. He&#39;s advised corporations and governments particularly in issues of public international law, international investment law, international tax, commercial and investor-state arbitration.<br/><br/>Jacky has worked on complex international disputes involving projects in the energy, mining and technology sectors. He has published and spoken on panels on various topics, including international investment law, mining and energy sectors and the environment, cybersecurity and blockchain technology.<br/><br/>Owing to an interest in emerging technology, he obtained programming skills in Python and am skilled with data analytics, machine learning and building AI models.<br/><br/>He holds an LL.M. from Humboldt University of Berlin, and Bachelors of Commerce and Law (LLB) with UNSW, Sydney.<br/></h1>
                 </div>
             </div>
         </div>
